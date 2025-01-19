@@ -64,7 +64,11 @@ toCalculate = input => {
         //to be true when there's a sign included in the inputs array and the answer is provided
         if (anAnswer.length !== 0 && test === true)  {   
             if (input === '%') {
-                inputs[inputs.length - 1] = inputs[inputs.length - 1] / 100;
+            //    inputs[inputs.length - 1] = inputs[inputs.length - 1] / 100;
+                let digit = inputs.join('');
+                digit = digit/100;
+                inputs = [];
+                inputs.push(digit);
             }
             question.innerText += `${inputs.join('')} = `;
             inputsCollection();
@@ -98,7 +102,6 @@ toCalculate = input => {
                 inputsCollection();
                 answer.innerText = 0;
                 question.innerText = anAnswer.join('');
-                console.log(`in ${test}\nanswer array: ${anAnswer}\nlast index`);
             }
 
             //when on last index there's not a nbr 
@@ -137,7 +140,10 @@ inputsCollection = () => {
     
     if (anAnswer[anAnswer.length - 1] === '%') {
         anAnswer.pop();
-        anAnswer[anAnswer.length - 1] = anAnswer[anAnswer.length - 1] / 100;
+        let digit = anAnswer.join('');
+        digit = digit/100;
+        anAnswer = [];
+        anAnswer.push(digit);
     }
     inputs = [];
 }
@@ -151,8 +157,6 @@ handling_answer_b4_eval = () => {
     let index,test,loop;
     index = 0;
     test = false;
-    console.log(`in handling 1: ${anAnswer}`);
-
     for (loop = anAnswer.length-1; loop>=0 ; loop--) {
         if (anAnswer[loop] === '-') {
             index = loop;
@@ -164,11 +168,9 @@ handling_answer_b4_eval = () => {
         anAnswer[index-1] = '+';
         for (loop = index; loop < anAnswer.length; loop++) {
             anAnswer[loop] = anAnswer[loop+1];
-
         }
         anAnswer.length--;
     }
-    console.log(`in handling 2: ${anAnswer}`);
 }
 
 digits.forEach(digit => {

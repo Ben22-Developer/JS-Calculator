@@ -1,3 +1,6 @@
+/*The logic in this is different from the normal one I just needed 
+to find another approach of calculating without using common approaches
+like the use of switch statements*/
 const allDigitsParent = document.getElementById('lowerPart');
 const digits = allDigitsParent.querySelectorAll('.digits');
 const signs = allDigitsParent.querySelectorAll('.signs');
@@ -74,7 +77,7 @@ toCalculate = input => {
             inputsCollection();
             handling_answer_b4_eval();
             let solution = eval(anAnswer.join(''));
-            if (solution === Infinity) {
+            if (solution === Infinity || solution === -Infinity || solution === NaN) {
                 solution = 'error';
             }
             answer.innerText = solution;

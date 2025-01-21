@@ -19,6 +19,7 @@ const body = document.querySelector('body');
 
 //functions
 let takeUserInputsClick,takeUserInputsKeyboard,validateUserInputs_1,validateUserInputs_2,collecUserInputs,calculateUserInputs,percent_handle;
+let recordFN,hideRecords,showRecords;
 
 //variables
 let dotCheck,percentCheck,anAnswer,inputs;
@@ -142,6 +143,9 @@ takeUserInputsKeyboard = (e) => {
             validateUserInputs_2(e.key);
         }
     }
+    if (e.key === 'Backspace') {
+        removeLastInput();
+    }
 }
 
 
@@ -212,8 +216,10 @@ collecUserInputs = (input,sign) => {
 }
 
 calculateUserInputs = (number_1,operation,number_2) => {
-    number_1 = parseFloat(number_1);
-    number_2 = parseFloat(number_2);
+    if (typeof(number_1) !== 'number' && typeof(number_2) !== 'number') {
+        number_1 = parseFloat(number_1);
+        number_2 = parseFloat(number_2);
+    }
     switch(operation) {
         case '+':
             return number_1 + number_2;
@@ -234,8 +240,10 @@ calculateUserInputs = (number_1,operation,number_2) => {
 }
 
 percent_handle = () => {
-    inputs.pop();
-    inputs = inputs.join('');
+    if (typeof(inputs) === 'object') {
+        inputs.pop();
+        inputs = inputs.join('');
+    }
     inputs = inputs/100;
     answer.innerText = inputs;
 }
@@ -312,12 +320,7 @@ showRecords = () => {
     document.addEventListener('mousedown',hideRecords);
 }
 
-fromRecords = () => {
-    question.innerText = 0;
-    answer.innerText = 0;
-    inputs = [];
-    wasInRecordBool = false;
-}
+
 
 removeLastInput = () => {
     if (typeof(inputs) === 'object') {

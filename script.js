@@ -251,7 +251,7 @@ digits.forEach(digit => {
 signs.forEach(sign => {
     sign.addEventListener('click', () => {
         if (sign.innerText === '+/-') {
-            if (typeof(inputs) === 'object') {
+            if (typeof(inputs) === 'object' && inputs.length > 1) {
                 if (inputs[0] === '-') {
                     inputs.shift('-');
                     answer.innerText = `${answer.innerText * -1}`;
@@ -261,6 +261,10 @@ signs.forEach(sign => {
                     answer.innerText = `-${answer.innerText}`;
                 }
                 console.log(inputs);
+            }
+            else {
+                inputs[0] = inputs[0] * -1;
+                answer.innerText = inputs;
             }
             if (typeof(inputs) === 'number') {
                 inputs = inputs * -1;

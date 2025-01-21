@@ -322,18 +322,25 @@ showRecords = () => {
 
 removeLastInput = () => {
     if (typeof(inputs) === 'object') {
-        const get = inputs.pop();
-        if (get === '.') {
-            dotCheck = true;
-        }
-
+        // const get = inputs.pop();
+        // if (get === '.') {
+        //     dotCheck = true;
+        // }
         if (inputs.length === 0) {
             answer.innerText = 0;
+            question.innerText = 0;           
         }
         else {
         answer.innerText = inputs.join('');
         }
     }
+    else {
+        inputs = [];
+        answer.innerText = 0;
+        question.innerText = 0;
+    }
+    percentCheck = true;
+    dotCheck = true;
 }
 
 history.addEventListener('click',showRecords);

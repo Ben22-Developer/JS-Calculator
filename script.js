@@ -216,10 +216,8 @@ collecUserInputs = (input,sign) => {
 }
 
 calculateUserInputs = (number_1,operation,number_2) => {
-    if (typeof(number_1) !== 'number' && typeof(number_2) !== 'number') {
-        number_1 = parseFloat(number_1);
-        number_2 = parseFloat(number_2);
-    }
+    number_1 = parseFloat(number_1);
+    number_2 = parseFloat(number_2);
     switch(operation) {
         case '+':
             return number_1 + number_2;

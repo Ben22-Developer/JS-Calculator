@@ -322,10 +322,10 @@ showRecords = () => {
 
 removeLastInput = () => {
     if (typeof(inputs) === 'object') {
-        // const get = inputs.pop();
-        // if (get === '.') {
-        //     dotCheck = true;
-        // }
+        const get = inputs.pop();
+        if (get === '.') {
+            dotCheck = true;
+        }
         if (inputs.length === 0) {
             answer.innerText = 0;
             question.innerText = 0;           

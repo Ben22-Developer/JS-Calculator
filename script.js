@@ -11,187 +11,256 @@ const no_record = records.querySelector('p');
 let recordList = document.querySelectorAll('.aRecord');
 const modeBtn = document.getElementById('mode');
 const body = document.querySelector('body');
-//Functions declaration
-let takeInputs,toCalculate,lastIndexCheck,inputsCollection;
-let showRecords,hideRecords,recordFN,removeLastInput,fromRecords,handling_answer_b4_eval;
 
-//other variables
-let anAnswer,/*inputBool,*/inputs,wasInRecordBool,enteredB4;
-anAnswer = [];
-//inputBool = true;
-inputs = [];
-wasInRecordBool = false;
-enteredB4 = false; //checking if the user enters a sign before a nbr
 
-takeInputs = digit => {
-    if (wasInRecordBool) {
-        fromRecords();
-    }
-  //  if (inputBool) {
-        answer.innerText = toCalculate(digit.target.innerText);
-    //}
-}
 
-toCalculate = input => {
-    let test,dotCheck,regex;
-    regex = /\d+|\./g;
-    test = regex.test(input);
-    //to be true when user was interacting with historical records
-    if (wasInRecordBool) {
-        fromRecords();
-        return;
-    }
-    //to be true when there's an inputted nbr
-    if (test) {
-        if (inputs[0] === 'error') {
-            question.innerText = 0;
-            inputs = [];
-            return 0;
-        }
-        enteredB4 = false;
-        dotCheck = /\./g;
-        test = dotCheck.test(inputs.join(''));
-        if (test === true && input === '.') {
-            return inputs.join('');
-        }
-        inputs.push(input);
-        return inputs.join('');
-    }
+//functions
+let takeUserInputsClick,takeUserInputsKeyboard,validateUserInputs_1,validateUserInputs_2,collecUserInputs,calculateUserInputs,percent_handle;
 
-    //to be true when there's an inputted sign not a number
-    else {
-        test = lastIndexCheck(inputs[inputs.length - 1]);
-        //to be true when there's a sign included in the inputs array and the answer is provided
-        if (anAnswer.length !== 0 && test === true)  {   
-            if (input === '%') {
-            //    inputs[inputs.length - 1] = inputs[inputs.length - 1] / 100;
-                let digit = inputs.join('');
-                digit = digit/100;
-                inputs = [];
-                inputs.push(digit);
+//variables
+let dotCheck,percentCheck;
+dotCheck = true;
+percentCheck = true;
+
+
+
+
+//this function is of when user triggers the calculator via a click
+
+takeUserInputsClick = (digit_or_sign) => {
+    //console.log(digit_or_sign.innerText);
+    let testDigits,regexDigits;
+    let testSymbols,regexSymbols;
+    regexDigits = /[\d|\.|\%]/g;
+    testDigits = regexDigits.test(digit_or_sign.target?.innerText);
+    regexSymbols = /[\+\-\*\/\=]/g;
+    testSymbols = regexSymbols.test(digit_or_sign.innerText);
+    if (testDigits) {
+        if (answer.innerText === '0') {
+            if (digit_or_sign.target.innerText === '.') {
+                answer.innerText += digit_or_sign.target.innerText;
+                inputs.push(0,digit_or_sign.target.innerText);
             }
-            question.innerText += `${inputs.join('')} = `;
-            inputsCollection();
-            handling_answer_b4_eval();
-            let solution = eval(anAnswer.join(''));
-            if (solution === Infinity) {
-                solution = 'error';
+            else if (digit_or_sign.target.innerText !== '0') {
+                answer.innerText = digit_or_sign.target.innerText;
+                inputs.push(digit_or_sign.target.innerText);
             }
-            answer.innerText = solution;
-            recordFN(question.innerText,answer.innerText);
-            anAnswer = [];
-            inputs.push(answer.innerText);
+        }
+        else if ((digit_or_sign.target.innerText !== '.' || dotCheck === true) && percentCheck === true) {
+            answer.innerText += digit_or_sign.target.innerText;
+            inputs.push(digit_or_sign.target.innerText);
+        }
+        if (digit_or_sign.target.innerText === '.') {
+            dotCheck = false;
+        }
+        if (digit_or_sign.target.innerText === '%') {
+            percentCheck = false;
+            percent_handle();
         }
 
-        //to be true when there's no sign included in the inputs array
-        else {
-            
-            //when user enters a sign before a number
-            if (enteredB4 === true) {
-                enteredB4 = false;
-               for (let loop = 0; loop < anAnswer.length; loop++) {
-                if (anAnswer[loop] === input) {
-                    enteredB4 = true;
-                }
-               }
-            }
-
-            //when on last index there's a nbr 
-            if (test && input !== '=') {    
-                inputs.push(input);
-                inputsCollection();
-                answer.innerText = 0;
-                question.innerText = anAnswer.join('');
-            }
-
-            //when on last index there's not a nbr 
-            else if (!test && input !== '=') {    
-            regex = /\d+/g;
-            test = regex.test(anAnswer[anAnswer.length - 1]);
-            if (!test) {
-                anAnswer.pop();
-            }
-            inputs.push(input); 
-            inputsCollection();
-            answer.innerText = 0;
-            question.innerText = anAnswer.join('');
-            }
-            if (!question.innerText) {
-                question.innerText = 0;
-            }
+        console.log(inputs);
+    } 
+    if (testSymbols) {
+        if ((/[\d](?=\%)/).test(answer.innerText) && digit_or_sign.innerText === '=') {
+            answer.innerText = inputs;
+        }
+        //this if is neglagating sth like (12 =) input
+        if ((anAnswer.length === 0) && (digit_or_sign.innerText === '=')) {} 
+        else if ((anAnswer.length === 0) && (digit_or_sign.innerText !== '=')) {
+            validateUserInputs_1(inputs,digit_or_sign.innerText);
+        }
+        else if ((anAnswer.length !== 0) && (inputs.length !== 0)) {
+            regexDigits = /[\d]/g;
+            const lastIndexCheck = regexDigits.test(anAnswer[anAnswer.length - 1]); 
+            if (!lastIndexCheck) {
+                validateUserInputs_1(inputs,digit_or_sign.innerText);
+            }    
+        }
+        else if ((anAnswer.length !== 0) && (inputs.length === 0) && ((digit_or_sign.innerText !== '='))) {
+            validateUserInputs_2(digit_or_sign.innerText);
         }
     }
 }
 
-//to put the user inputs in an answer array which will provide an answer
-inputsCollection = () => {
-    console.log(`inputs: ${inputs}\nanswer: ${anAnswer}`);
-    if (inputs[0] === 'error') {
-        answer.innerText = 0;
+
+
+//this function is of when user triggers the calculator via a click
+
+takeUserInputsKeyboard = (e) => {
+    let testDigits,regexDigits;
+    let testSymbols,regexSymbols;
+    regexDigits = /[\d|\.|\%]/g;
+    testDigits = regexDigits.test(e.key);
+    regexSymbols = /[\+\-\*\/\=]/g;
+    testSymbols = regexSymbols.test(e.key);
+    if (testDigits) {
+        if (answer.innerText === '0') {
+            if (e.key === '.') {
+                answer.innerText += e.key;
+                inputs.push(0,e.key);
+            }
+            else if (e.key !== '0') {
+                answer.innerText = e.key;
+                inputs.push(e.key);
+            }
+        }
+        else if ((e.key !== '.' || dotCheck === true) && percentCheck === true) {
+            answer.innerText += e.key;
+            inputs.push(e.key);
+        }
+        if (e.key === '.') {
+            dotCheck = false;
+        }
+        if (e.key === '%') {
+            percentCheck = false;
+            percent_handle();
+        }
+
+        console.log(inputs);
+    } 
+    if (testSymbols) {
+        if ((/[\d](?=\%)/).test(answer.innerText) && e.key === '=') {
+            answer.innerText = inputs;
+        }
+        //this if is neglagating sth like (12 =) input
+        if ((anAnswer.length === 0) && (e.key === '=')) {} 
+        else if ((anAnswer.length === 0) && (e.key !== '=')) {
+            validateUserInputs_1(inputs,e.key);
+        }
+        else if ((anAnswer.length !== 0) && (inputs.length !== 0)) {
+            regexDigits = /[\d]/g;
+            const lastIndexCheck = regexDigits.test(anAnswer[anAnswer.length - 1]); 
+            if (!lastIndexCheck) {
+                validateUserInputs_1(inputs,e.key);
+            }    
+        }
+        else if ((anAnswer.length !== 0) && (inputs.length === 0) && ((e.key !== '='))) {
+            validateUserInputs_2(e.key);
+        }
+    }
+}
+
+
+
+
+
+
+validateUserInputs_1 = (inputs,key) => {
+    if (typeof(inputs) === 'object') {
+        inputs = inputs.join('');
+    }
+
+    //the following regex are validating the decimal numbers
+    if ((!dotCheck) && ((/\.\d+([0]+)$/g).test(answer.innerText))) {
+        console.log('in');
+        inputs = inputs.match(/\d+\.[0-9]+[1-9]+(?=[0]+)/g);
+    }
+    if (/^0[0]*\.*0$/.test(inputs) || (!inputs)) {
         inputs = [];
-        return;
+        inputs.push(0);
     }
-    const lastIndex = lastIndexCheck(inputs[inputs.length - 1]);
-    if (lastIndex === false && enteredB4 === false && inputs[inputs.length - 1] !== '=' && inputs.length === 1 && anAnswer.length === 0) {
-        anAnswer.push(0);
-        enteredB4 = true;
-    }
-    anAnswer = [...anAnswer,...inputs];
-    
-    if (anAnswer[anAnswer.length - 1] === '%') {
-        anAnswer.pop();
-        let digit = anAnswer.join('');
-        digit = digit/100;
+    collecUserInputs(inputs,key);
+    dotCheck = true;
+    percentCheck = true;
+}
+validateUserInputs_2 = (sign) => {
+    anAnswer.pop();
+    anAnswer.push(sign);
+    question.innerText = `${anAnswer[0]}${anAnswer[1]}`;
+}
+
+collecUserInputs = (input,sign) => {
+    anAnswer.push(input,sign);
+    console.log(`answer ${anAnswer}`);
+    if (anAnswer.length === 4) {
+        let solution;
+        solution = calculateUserInputs(anAnswer[0],anAnswer[1],anAnswer[2]);
+        inputs = [];
+        recordFN(anAnswer[0],anAnswer[1],anAnswer[2],solution);
+        if (anAnswer[3] === '=') {
+        if (solution == 'Infinity' || solution == '-Infinity' || solution == 'NaN') {
+            solution = 'error';
+        }
+        question.innerText += `${anAnswer[2]}${anAnswer[3]}`;
+        answer.innerText = solution;
+        inputs.push(solution);
         anAnswer = [];
-        anAnswer.push(digit);
-    }
-    inputs = [];
-}
-
-lastIndexCheck = (sign) => {
-    const regex = /(\d+|\.|\%)+/g;
-    return regex.test(sign) ? true:false;
-}
-
-handling_answer_b4_eval = () => {
-    let index,test,loop;
-    index = 0;
-    test = false;
-    for (loop = anAnswer.length-1; loop>=0 ; loop--) {
-        if (anAnswer[loop] === '-') {
-            index = loop;
-            break;
+        }
+        else {
+            for (let loop = 0; loop<3; loop++) {
+                anAnswer.shift(anAnswer[0]);
+            }
+            anAnswer.unshift(solution);
+            console.log(anAnswer);
+            question.innerText = `${anAnswer[0]}${anAnswer[1]}`;
+            answer.innerText = '0';
         }
     }
-    test = anAnswer[index-1] === anAnswer[index] ? true:false;
-    if (test) {
-        anAnswer[index-1] = '+';
-        for (loop = index; loop < anAnswer.length; loop++) {
-            anAnswer[loop] = anAnswer[loop+1];
-        }
-        anAnswer.length--;
+    else {
+        answer.innerText = '0';
+        question.innerText = `${anAnswer[0]}${anAnswer[1]}`;
+        inputs = [];
     }
 }
+
+calculateUserInputs = (number_1,operation,number_2) => {
+    number_1 = parseFloat(number_1);
+    number_2 = parseFloat(number_2);
+    switch(operation) {
+        case '+':
+            return number_1 + number_2;
+        break;
+        case '-':
+            return number_1 - number_2;
+        break;
+        case '*':
+            return number_1 * number_2;
+        break;
+        case '/':
+            return number_1 / number_2;
+        break;
+        default:
+            return 'error';
+        break;
+    }
+}
+
+percent_handle = () => {
+    inputs.pop();
+    inputs = inputs.join('');
+    inputs = inputs/100;
+    answer.innerText = inputs;
+}
+
+
+
+
 
 digits.forEach(digit => {
-    digit.addEventListener('click',takeInputs);
+    digit.addEventListener('click',takeUserInputsClick);
 });
 
 signs.forEach(sign => {
     sign.addEventListener('click', () => {
         if (sign.innerText === '+/-') {
-            answer.innerText = answer.innerText * -1;
-            const regex = /[-]/g;
-            const test = regex.test(answer.innerText);
-            if (test) {
-                inputs.unshift('-');
+            if (typeof(inputs) === 'object') {
+                if (inputs[0] === '-') {
+                    inputs.shift('-');
+                    answer.innerText = `${answer.innerText * -1}`;
+                }
+                else if (inputs[0] !== '-') {
+                    inputs.unshift('-');
+                    answer.innerText = `-${answer.innerText}`;
+                }
+                console.log(inputs);
             }
-            else {
-                inputs.shift();
+            if (typeof(inputs) === 'number') {
+                inputs = inputs * -1;
+                answer.innerText = inputs;
             }
         }
         else {
-            toCalculate(sign.innerText);
+            takeUserInputsClick(sign);
         }
     });
 })
@@ -203,13 +272,13 @@ start.addEventListener('mousedown', () => {
     inputs = [];
 })
 
-recordFN = (question,answer) => {
+recordFN = (number_1,operation,number_2,solution) => {
     if (!no_record.matches('.hidden')) {
         no_record.setAttribute('class','hidden');
     }
     const aRecord = document.createElement('li');
     aRecord.setAttribute('class','aRecord');
-    aRecord.innerHTML = `<span class="question">${question}</span><span class="answer">${answer}</span>`;
+    aRecord.innerHTML = `<span class="question_answer">${number_1} ${operation} ${number_2} = ${solution}</span>`;
     records.append(aRecord);
     recordList = records.querySelectorAll('.aRecord');
 }
@@ -239,12 +308,18 @@ fromRecords = () => {
 }
 
 removeLastInput = () => {
-    inputs.pop();
-    if (inputs.length === 0) {
-        answer.innerText = 0;
-    }
-    else {
-    answer.innerText = inputs.join('');
+    if (typeof(inputs) === 'object') {
+        const get = inputs.pop();
+        if (get === '.') {
+            dotCheck = true;
+        }
+
+        if (inputs.length === 0) {
+            answer.innerText = 0;
+        }
+        else {
+        answer.innerText = inputs.join('');
+        }
     }
 }
 
@@ -264,3 +339,4 @@ modeBtn.addEventListener('click', () => {
         modeBtn.style.color = '#ffffff';
     }
 })
+document.addEventListener('keydown',takeUserInputsKeyboard);

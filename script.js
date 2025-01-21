@@ -1,3 +1,6 @@
+/*The logic in this is different from the normal one I just needed 
+to find another approach of calculating without using common approaches
+like the use of switch statements*/
 const allDigitsParent = document.getElementById('lowerPart');
 const digits = allDigitsParent.querySelectorAll('.digits');
 const signs = allDigitsParent.querySelectorAll('.signs');
@@ -18,10 +21,11 @@ const body = document.querySelector('body');
 let takeUserInputsClick,takeUserInputsKeyboard,validateUserInputs_1,validateUserInputs_2,collecUserInputs,calculateUserInputs,percent_handle;
 
 //variables
-let dotCheck,percentCheck;
+let dotCheck,percentCheck,anAnswer,inputs;
 dotCheck = true;
 percentCheck = true;
-
+anAnswer = [];
+inputs= [];
 
 
 
@@ -151,9 +155,13 @@ validateUserInputs_1 = (inputs,key) => {
     }
 
     //the following regex are validating the decimal numbers
-    if ((!dotCheck) && ((/\.\d+([0]+)$/g).test(answer.innerText))) {
-        console.log('in');
-        inputs = inputs.match(/\d+\.[0-9]+[1-9]+(?=[0]+)/g);
+    if ((!dotCheck) && ((/-?\.\d+([0]+)$/g).test(answer.innerText))) {
+        if (/\d+(?=\.[0]+$)/g.test(answer.innerText)) {
+            inputs = inputs.match(/\d+(?=\.[0]+$)/g);
+        }
+        else {
+            inputs = inputs.match(/-?\d+\.[0-9]+[1-9]+(?=[0]+)/g);
+        }
     }
     if (/^0[0]*\.*0$/.test(inputs) || (!inputs)) {
         inputs = [];
